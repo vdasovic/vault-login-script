@@ -7,13 +7,13 @@ usage() {
     Options:
     -a, --address                Vault address. Default is https://vault.infinum.co:8200
     -k, --key                    Path to ssh key. Default is ~/.ssh/id_rsa. Script uses .pub key pair for signing and private key to initiate connection to the server
-    -t, --token                  Github token used for auth. By default it is pulled from variable $GITHUB_TOKEN
+    -t, --token                  Github token used for auth. By default it is pulled from variable GITHUB_TOKEN
     -p, --port                   SSH port
     -s, --sign                   Sign a certificate and write it to temporary file. Don't login
     -h, --help                   Print this message
 
     Example:
-    vssh user@123.45.67.89
+    $(basename "${0}") user@123.45.67.89
     "
 }
 
