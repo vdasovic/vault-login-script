@@ -96,7 +96,13 @@ vault_auth() {
 
 vault_sign_key() {
     SIGNED_KEY_PATH=$(mktemp)
-    curl -s --header "X-Vault-Token: ${VAULT_TOKEN}" -X POST -d '{"public_key": "'"$(cat ${PUBLIC_SSH_KEY_PATH})"'"}' "${VAULT_ADDR}/v1/ssh/sign/${USER}" | jq -r .data.signed_key > "${SIGNED_KEY_PATH}"
+    RESPONSE=$(curl -sS --fail --header "X-Vault-Token: ${VAULT_TOKEN}" -X POST -d '{"public_key": "'"$(cat ${PUBLIC_SSH_KEY_PATH})"'"}' "${VAULT_ADDR}/v1/ssh/sign/${USER}")
+    if [ $? -eq 0 ]; then
+        echo ${RESPONSE} | jq -r .data.signed_key > ${SIGNED_KEY_PATH}
+    else
+        echo "[ERR] Couldn't sign a key. Check if you are added to correct github team."
+        exit 1
+    fi
 }
 
 login() {
@@ -118,7 +124,7 @@ main() {
     vault_auth
     vault_sign_key
 
-    if [ "${SIGN}" -eq "1" ]; then
+    if [ "${SIGN}" = "1" ]; then
         echo "${SIGNED_KEY_PATH}"
     else
         login
