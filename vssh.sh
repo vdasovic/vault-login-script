@@ -97,11 +97,11 @@ vault_auth() {
 
 vault_sign_key() {
     SIGNED_KEY_PATH=$(mktemp)
-    if RESPONSE=$(curl -sS --fail --header "X-Vault-Token: ${VAULT_TOKEN}" -X POST -d '{"public_key": "'"$(cat "${PUBLIC_SSH_KEY_PATH}")"'"}' "${VAULT_ADDR}/v1/ssh/sign/${USER}"); then
+    if RESPONSE=$(curl -s --fail --header "X-Vault-Token: ${VAULT_TOKEN}" -X POST -d '{"public_key": "'"$(cat "${PUBLIC_SSH_KEY_PATH}")"'"}' "${VAULT_ADDR}/v1/ssh/sign/${USER}"); then
         echo "${RESPONSE}" | jq -r .data.signed_key > "${SIGNED_KEY_PATH}"
     else
         echo "[ERR] Couldn't sign a key. Check if you are added to correct github team."
-        exit 1
+        echo "Script will try to log you in without signing the key. It will work if your key is authorized. If not, contact your PM to add you to github project"
     fi
 }
 
